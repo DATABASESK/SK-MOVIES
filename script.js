@@ -9,11 +9,17 @@ const sectionTitle = document.getElementById("section-title");
 const movieList = document.getElementById("movie-list");
 const drawer = document.getElementById("drawer");
 const mainContent = document.getElementById("main-content");
-const toggleButton = document.querySelector(".toggle-button");
 
 const toggleDrawer = () => {
   drawer.classList.toggle("open");
   mainContent.classList.toggle("drawer-open");
+  if (drawer.classList.contains("open")) {
+    // Close the drawer after 3 seconds
+    setTimeout(() => {
+      drawer.classList.remove("open");
+      mainContent.classList.remove("drawer-open");
+    }, 3000);
+  }
 };
 
 const loadContent = async (category) => {
