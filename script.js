@@ -15,9 +15,9 @@ const toggleDrawer = () => {
   drawer.classList.toggle("open");
   mainContent.classList.toggle("drawer-open");
 
-  // Move focus back to the main content when the drawer is toggled
+  // When the drawer is toggled, focus should be moved to the main content area
   if (drawer.classList.contains("open")) {
-    movieList.focus(); // Set focus on the movie list when the drawer is open
+    movieList.focus(); // Set focus on the movie list
   } else {
     toggleButton.focus(); // Set focus back to the toggle button if the drawer is closed
   }
@@ -32,6 +32,7 @@ const loadContent = async (category) => {
       category.charAt(0).toUpperCase() + category.slice(1) + " Movies";
     displayMovies(movies);
     toggleDrawer(); // Close the drawer after selection
+    movieList.focus(); // Focus back to movie list for proper navigation
   } catch (error) {
     console.error("Error fetching movies:", error);
   }
@@ -42,7 +43,7 @@ const displayMovies = (movies) => {
   movies.forEach((movie) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
-    movieCard.tabIndex = 0;  // Make the movie card focusable
+    movieCard.tabIndex = 0;  // Make movie card focusable
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
@@ -59,7 +60,7 @@ const displayMovies = (movies) => {
     movieList.appendChild(movieCard);
   });
 
-  // Focus the first movie card after loading the movies
+  // Ensure that the first movie card receives focus after loading
   if (movieList.firstChild) {
     movieList.firstChild.focus();
   }
