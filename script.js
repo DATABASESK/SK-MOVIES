@@ -14,13 +14,6 @@ const toggleButton = document.querySelector(".toggle-button");
 const toggleDrawer = () => {
   drawer.classList.toggle("open");
   mainContent.classList.toggle("drawer-open");
-
-  // When the drawer is toggled, focus should be moved to the main content area
-  if (drawer.classList.contains("open")) {
-    movieList.focus(); // Set focus on the movie list
-  } else {
-    toggleButton.focus(); // Set focus back to the toggle button if the drawer is closed
-  }
 };
 
 const loadContent = async (category) => {
@@ -31,8 +24,6 @@ const loadContent = async (category) => {
     sectionTitle.textContent =
       category.charAt(0).toUpperCase() + category.slice(1) + " Movies";
     displayMovies(movies);
-    toggleDrawer(); // Close the drawer after selection
-    movieList.focus(); // Focus back to movie list for proper navigation
   } catch (error) {
     console.error("Error fetching movies:", error);
   }
@@ -60,7 +51,7 @@ const displayMovies = (movies) => {
     movieList.appendChild(movieCard);
   });
 
-  // Ensure that the first movie card receives focus after loading
+  // Focus the first movie card after loading the content
   if (movieList.firstChild) {
     movieList.firstChild.focus();
   }
@@ -68,3 +59,10 @@ const displayMovies = (movies) => {
 
 // Load default category (Tamil Movies) on load
 loadContent("tamil");
+
+// Listen for the left arrow key to toggle the drawer
+document.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft") {
+    toggleDrawer();
+  }
+});
