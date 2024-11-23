@@ -38,19 +38,6 @@ body {
   background-color: #444;
 }
 
-/* Toggle Button */
-.toggle-button {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: #222;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  z-index: 1000; /* Above other content */
-}
-
 /* Main Content */
 .main {
   margin-left: 0; /* No offset when drawer is hidden */
