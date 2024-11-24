@@ -69,20 +69,25 @@ const loadContent = async (category) => {
   }
 };
 
-// Display movies in the horizontal scrollable container
+// Display movies in the grid
 const displayMovies = (movies) => {
   movieList.innerHTML = "";
   movies.forEach((movie) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
-    movieCard.tabIndex = 0; // Enable focus for keyboard navigation
+    movieCard.tabIndex = 0; // Enable focus
     movieCard.innerHTML = `
-      <img src="${movie.uri}" alt="${movie.name}">
+      <div class="card-holder">
+        <img src="${movie.uri}" alt="${movie.name}">
+      </div>
       <p>${movie.name}</p>
     `;
     movieCard.onclick = () => {
       window.open(movie.link, "_blank"); // Open video in a new tab
     };
+    movieCard.addEventListener("touchend", () => {
+      window.open(movie.link, "_blank"); // Open video in a new tab (for mobile)
+    });
     movieList.appendChild(movieCard);
   });
 };
