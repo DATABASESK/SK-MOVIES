@@ -69,13 +69,13 @@ const loadContent = async (category) => {
   }
 };
 
-// Display movies in the grid
+// Display movies in the horizontal scrollable container
 const displayMovies = (movies) => {
   movieList.innerHTML = "";
   movies.forEach((movie) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
-    movieCard.tabIndex = 0; // Enable focus
+    movieCard.tabIndex = 0; // Enable focus for keyboard navigation
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
