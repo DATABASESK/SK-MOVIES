@@ -45,12 +45,14 @@ document.addEventListener("touchstart", handleTouchStart, { passive: true });
 document.addEventListener("touchmove", handleTouchMove, { passive: true });
 document.addEventListener("touchend", handleTouchEnd);
 
-// Listen for keyboard arrows
+// Listen for keyboard navigation
 document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") {
     openDrawer();
   } else if (event.key === "ArrowRight") {
     closeDrawer();
+  } else {
+    handleMovieCardNavigation(event);
   }
 });
 
@@ -72,10 +74,11 @@ const loadContent = async (category) => {
 // Display movies in the grid
 const displayMovies = (movies) => {
   movieList.innerHTML = "";
-  movies.forEach((movie) => {
+  movies.forEach((movie, index) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
-    movieCard.tabIndex = 0; // Enable focus
+    movieCard.tabIndex = index === 0 ? 0 : -1; // Only the first card is focusable by default
+    movieCard.dataset.index = index; // Save index for navigation
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
@@ -85,6 +88,40 @@ const displayMovies = (movies) => {
     };
     movieList.appendChild(movieCard);
   });
+  movieList.firstChild.focus(); // Focus the first card
+};
+
+// Navigate movie cards with arrow keys
+const handleMovieCardNavigation = (event) => {
+  const focusedElement = document.activeElement;
+  if (!focusedElement.classList.contains("movie-card")) return;
+
+  const cards = Array.from(document.querySelectorAll(".movie-card"));
+  const currentIndex = parseInt(focusedElement.dataset.index, 10);
+
+  const columns = Math.floor(window.innerWidth / 250); // Approximate card width
+  let nextIndex = currentIndex;
+
+  switch (event.key) {
+    case "ArrowUp":
+      nextIndex = currentIndex - columns >= 0 ? currentIndex - columns : currentIndex;
+      break;
+    case "ArrowDown":
+      nextIndex = currentIndex + columns < cards.length ? currentIndex + columns : currentIndex;
+      break;
+    case "ArrowLeft":
+      nextIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : currentIndex;
+      break;
+    case "ArrowRight":
+      nextIndex = currentIndex + 1 < cards.length ? currentIndex + 1 : currentIndex;
+      break;
+    default:
+      return;
+  }
+
+  cards[currentIndex].tabIndex = -1; // Remove focusability from current card
+  cards[nextIndex].tabIndex = 0; // Add focusability to next card
+  cards[nextIndex].focus(); // Move focus
 };
 
 // Load default category (Tamil Movies)
