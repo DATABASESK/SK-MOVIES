@@ -13,12 +13,17 @@
     <a href="#" onclick="loadContent('hollywood')">Hollywood</a>
     <a href="#" onclick="loadContent('multi')">Multi Language</a>
     <a href="#" onclick="loadContent('ott')">OTT</a>
+    <a href="#" onclick="loadContent('netflix')">Netflix</a>
   </div>
 
   <!-- Main Content -->
   <div class="main" id="main-content">
     <h1 id="section-title">Tamil Movies</h1>
     <div class="movie-list" id="movie-list"></div>
+    <div class="video-player" id="video-player" style="display: none;">
+      <button onclick="closeVideo()">Back</button>
+      <iframe id="video-frame" frameborder="0"></iframe>
+    </div>
   </div>
 
   <script src="script.js"></script>
