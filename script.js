@@ -6,28 +6,20 @@ const apiUrls = {
   netflix: "https://final-rj4x.onrender.com/SK",
 };
 
-const sectionTitle = document.getElementById("section-title");
-const movieList = document.getElementById("movie-list");
-const videoPlayer = document.getElementById("video-player");
-const videoFrame = document.getElementById("video-frame");
 const drawer = document.getElementById("drawer");
+const movieList = document.getElementById("movie-list");
+const sectionTitle = document.getElementById("section-title");
 
-let drawerOpen = false;
-
-// Toggle drawer visibility when the left key is pressed
+/* Toggle Drawer on Left Key */
 document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") {
-    toggleDrawer();
+    drawer.classList.toggle("open");
+  } else if (event.key === "ArrowRight" && drawer.classList.contains("open")) {
+    drawer.classList.remove("open");
   }
 });
 
-// Function to toggle drawer
-const toggleDrawer = () => {
-  drawerOpen = !drawerOpen;
-  drawer.classList.toggle("open", drawerOpen);
-};
-
-// Function to load content based on the selected drawer item
+/* Fetch and Display Movies */
 const loadContent = async (category) => {
   try {
     const apiUrl = apiUrls[category];
@@ -36,18 +28,15 @@ const loadContent = async (category) => {
     sectionTitle.textContent =
       category.charAt(0).toUpperCase() + category.slice(1) + " Movies";
     displayMovies(movies);
-    drawer.classList.remove("open");
-    drawerOpen = false; // Automatically close the drawer
+    drawer.classList.remove("open"); // Automatically close drawer after selection
   } catch (error) {
     console.error("Error fetching movies:", error);
   }
 };
 
-// Function to display movies in the grid
+/* Display Movies in Grid */
 const displayMovies = (movies) => {
-  movieList.innerHTML = "";
-  movieList.style.display = "grid"; // Ensure grid is shown
-  videoPlayer.style.display = "none"; // Hide the video player if visible
+  movieList.innerHTML = ""; // Clear previous content
   movies.forEach((movie) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
@@ -55,24 +44,13 @@ const displayMovies = (movies) => {
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
     `;
-    movieCard.onclick = () => playVideo(movie.link);
+    movieCard.onclick = () => {
+      // Open movie link in the same tab
+      window.open(movie.link, "_blank");
+    };
     movieList.appendChild(movieCard);
   });
 };
 
-// Function to play the video
-const playVideo = (videoLink) => {
-  videoFrame.src = videoLink;
-  movieList.style.display = "none";
-  videoPlayer.style.display = "flex";
-};
-
-// Function to close the video player
-const closeVideo = () => {
-  videoFrame.src = "";
-  videoPlayer.style.display = "none";
-  movieList.style.display = "grid";
-};
-
-// Load default category (Tamil Movies) on load
+/* Load Default Content */
 loadContent("tamil");
