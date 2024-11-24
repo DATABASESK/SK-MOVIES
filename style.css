@@ -63,36 +63,23 @@ body {
 .movie-card {
   background-color: #333;
   border-radius: 10px;
-  overflow: hidden;
+  padding: 10px;
+  text-align: center;
   outline: none;
   cursor: pointer;
-  position: relative;
 }
 
-.movie-card:focus,
-.movie-card:hover {
+.movie-card:focus {
   border: 2px solid #fff;
 }
 
-/* Card Holder for Image */
-.card-holder {
+.movie-card img {
   width: 100%;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #000;
-  overflow: hidden;
-}
-
-.card-holder img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* Ensures no cropping */
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
 }
 
 .movie-card p {
   margin: 10px 0 0;
-  padding: 10px;
-  text-align: center;
 }
