@@ -79,6 +79,8 @@ const displayMovies = (movies) => {
     movieCard.classList.add("movie-card");
     movieCard.tabIndex = index === 0 ? 0 : -1; // Only the first card is focusable by default
     movieCard.dataset.index = index; // Save index for navigation
+    movieCard.dataset.row = Math.floor(index / 3); // Row number based on the index
+    movieCard.dataset.column = index % 3; // Column number based on the index
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
@@ -98,27 +100,40 @@ const handleMovieCardNavigation = (event) => {
 
   const cards = Array.from(document.querySelectorAll(".movie-card"));
   const currentIndex = parseInt(focusedElement.dataset.index, 10);
+  const columns = 3; // Number of columns in the grid (adjust as per the grid style)
 
-  const columns = Math.floor(window.innerWidth / 250); // Approximate card width
   let nextIndex = currentIndex;
 
   switch (event.key) {
     case "ArrowUp":
-      nextIndex = currentIndex - columns >= 0 ? currentIndex - columns : currentIndex;
+      // Move up: only if there's a card in the row above
+      if (focusedElement.dataset.row > 0) {
+        nextIndex = currentIndex - columns;
+      }
       break;
     case "ArrowDown":
-      nextIndex = currentIndex + columns < cards.length ? currentIndex + columns : currentIndex;
+      // Move down: only if there's a card in the row below
+      if (focusedElement.dataset.row < Math.floor(cards.length / columns)) {
+        nextIndex = currentIndex + columns;
+      }
       break;
     case "ArrowLeft":
-      nextIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : currentIndex;
+      // Move left: only if we're not at the first column
+      if (focusedElement.dataset.column > 0) {
+        nextIndex = currentIndex - 1;
+      }
       break;
     case "ArrowRight":
-      nextIndex = currentIndex + 1 < cards.length ? currentIndex + 1 : currentIndex;
+      // Move right: only if we're not at the last column
+      if (focusedElement.dataset.column < columns - 1) {
+        nextIndex = currentIndex + 1;
+      }
       break;
     default:
       return;
   }
 
+  // Update tabIndex and focus for next movie card
   cards[currentIndex].tabIndex = -1; // Remove focusability from current card
   cards[nextIndex].tabIndex = 0; // Add focusability to next card
   cards[nextIndex].focus(); // Move focus
