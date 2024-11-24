@@ -77,17 +77,12 @@ const displayMovies = (movies) => {
     movieCard.classList.add("movie-card");
     movieCard.tabIndex = 0; // Enable focus
     movieCard.innerHTML = `
-      <div class="card-holder">
-        <img src="${movie.uri}" alt="${movie.name}">
-      </div>
+      <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
     `;
     movieCard.onclick = () => {
       window.open(movie.link, "_blank"); // Open video in a new tab
     };
-    movieCard.addEventListener("touchend", () => {
-      window.open(movie.link, "_blank"); // Open video in a new tab (for mobile)
-    });
     movieList.appendChild(movieCard);
   });
 };
