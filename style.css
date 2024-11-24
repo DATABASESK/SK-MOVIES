@@ -79,7 +79,13 @@ body {
   align-items: center;
   padding: 10px;
   text-align: center;
-  height: 200px; /* Maintain a rectangle shape */
+  height: 200px;
+  outline: none; /* Remove default focus styles */
+}
+
+.movie-card:focus {
+  border: 2px solid #fff; /* Highlight focused element */
+  background-color: #444; /* Optional: Change background color */
 }
 
 .movie-card img {
@@ -93,21 +99,4 @@ body {
   margin: 10px 0 0;
   font-size: 14px;
   color: #fff;
-}
-
-/* Scrollbar Customization */
-body::-webkit-scrollbar,
-.movie-list::-webkit-scrollbar {
-  width: 10px;
-}
-
-body::-webkit-scrollbar-thumb,
-.movie-list::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border-radius: 5px;
-}
-
-body::-webkit-scrollbar-thumb:hover,
-.movie-list::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
 }
