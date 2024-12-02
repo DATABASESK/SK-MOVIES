@@ -10,6 +10,8 @@ const drawer = document.getElementById("drawer");
 const movieList = document.getElementById("movie-list");
 const sectionTitle = document.getElementById("section-title");
 let focusIndex = -1; // Index for focus (-1 when no card is focused)
+let touchStartX = 0; // Starting X position of the touch
+let touchEndX = 0;   // Ending X position of the touch
 
 // Toggle drawer visibility with Arrow keys
 document.addEventListener("keydown", (event) => {
@@ -27,6 +29,34 @@ document.addEventListener("keydown", (event) => {
     openMovieLink(); // Open the focused movie link
   }
 });
+
+// Add touch listeners for swipe gestures
+document.addEventListener("touchstart", (event) => {
+  touchStartX = event.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", (event) => {
+  touchEndX = event.changedTouches[0].screenX;
+  handleSwipeGesture();
+});
+
+// Function to handle swipe gestures
+const handleSwipeGesture = () => {
+  const swipeDistance = touchEndX - touchStartX;
+
+  if (swipeDistance > 50) {
+    // Swipe Right: Close drawer
+    if (drawer.classList.contains("open")) {
+      drawer.classList.remove("open");
+    }
+  } else if (swipeDistance < -50) {
+    // Swipe Left: Open drawer
+    if (!drawer.classList.contains("open")) {
+      drawer.classList.add("open");
+      focusIndex = -1; // Reset focus
+    }
+  }
+};
 
 // Fetch and display movies for a selected category
 const loadContent = async (category) => {
