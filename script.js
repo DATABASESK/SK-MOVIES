@@ -97,7 +97,7 @@ const displayMovies = (movies) => {
       <p>${movie.name}</p>
     `;
     movieCard.onclick = () => {
-      openMovieInWebView(movie.link); // Open movie link in the same tab
+      window.open(movie.link, "_blank"); // Open movie link in a new tab
     };
     movieList.appendChild(movieCard);
   });
@@ -142,51 +142,15 @@ const focusMovie = (index) => {
   }
 };
 
-// Open the movie link in WebView (iframe)
-const openMovieInWebView = (movieLink) => {
-  let webview = document.getElementById("movie-webview");
-
-  // If WebView doesn't exist, create one
-  if (!webview) {
-    webview = document.createElement("iframe");
-    webview.id = "movie-webview";  // Assign an ID to the iframe for easy reference
-    webview.style.width = "100%";   // Full width
-    webview.style.height = "100vh"; // Full screen height
-    webview.style.border = "none"; // No border
-    document.body.appendChild(webview); // Add the iframe to the body
-  }
-
-  // Set the source of the iframe to the movie link
-  webview.src = movieLink;
-
-  // Optionally, hide or disable other elements when WebView is active
-  movieList.style.display = "none";  // Hide movie list, for example
-  drawer.style.display = "none";     // Hide drawer if necessary
-
-  // Add close button for exiting WebView
-  let closeButton = document.getElementById("close-webview");
-  if (!closeButton) {
-    closeButton = document.createElement("button");
-    closeButton.id = "close-webview";
-    closeButton.textContent = "Close";
-    closeButton.onclick = closeWebView;
-    document.body.appendChild(closeButton);
-  }
-};
-
-// Close the WebView and return to the movie list
-const closeWebView = () => {
-  const webview = document.getElementById("movie-webview");
-  if (webview) {
-    webview.remove(); // Remove the iframe
-    movieList.style.display = "block"; // Show the movie list again
-    drawer.style.display = "block";    // Show the drawer again
-  }
-
-  // Remove the close button
-  const closeButton = document.getElementById("close-webview");
-  if (closeButton) {
-    closeButton.remove();
+// Open the link of the focused movie card
+const openMovieLink = () => {
+  const movieCards = document.querySelectorAll(".movie-card");
+  if (movieCards.length > 0 && focusIndex >= 0 && focusIndex < movieCards.length) {
+    const selectedCard = movieCards[focusIndex];
+    const link = selectedCard.getAttribute("data-link");
+    if (link) {
+      window.open(link, "_blank"); // Open the movie link in a new tab
+    }
   }
 };
 
