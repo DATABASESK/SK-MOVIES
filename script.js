@@ -3,7 +3,7 @@ const apiUrls = {
   hollywood: "https://final-rj4x.onrender.com/hollywood",
   multi: "https://final-rj4x.onrender.com/multi",
   ott: "https://final-rj4x.onrender.com/TV",
-  netflix: "https://final-rj4x.onrender.com/SK",
+  netflix: "https://final-rj4x.onrender.com/PRIVATE",
 };
 
 const drawer = document.getElementById("drawer");
