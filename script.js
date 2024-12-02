@@ -10,65 +10,18 @@ const drawer = document.getElementById("drawer");
 const movieList = document.getElementById("movie-list");
 const sectionTitle = document.getElementById("section-title");
 let focusIndex = -1; // Index for focus (-1 when no card is focused)
-let touchStartX = 0; // Starting X position of the touch
-let touchStartY = 0; // Starting Y position of the touch
-let touchEndX = 0;   // Ending X position of the touch
-let touchEndY = 0;   // Ending Y position of the touch
+let allMovies = []; // Global variable to hold all movies for filtering
 
-// Toggle drawer visibility with Arrow keys
-document.addEventListener("keydown", (event) => {
-  if (event.key === "ArrowLeft") {
-    drawer.classList.add("open");
-    focusIndex = -1; // Reset movie focus when opening the drawer
-  } else if (event.key === "ArrowRight" && drawer.classList.contains("open")) {
-    drawer.classList.remove("open");
-  } else if (drawer.classList.contains("open")) {
-    return; // Skip movie navigation when drawer is open
-  } else if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-    navigateMovies(event.key);
-  } else if (event.key === "Enter" && focusIndex >= 0) {
-    openMovieLink();
-  }
-});
-
-// Touch listeners for swipe gestures
-document.addEventListener("touchstart", (event) => {
-  touchStartX = event.changedTouches[0].screenX;
-  touchStartY = event.changedTouches[0].screenY;
-});
-
-document.addEventListener("touchend", (event) => {
-  touchEndX = event.changedTouches[0].screenX;
-  touchEndY = event.changedTouches[0].screenY;
-
-  // Only handle swipe gestures if horizontal movement is significant
-  const horizontalSwipeDistance = Math.abs(touchEndX - touchStartX);
-  const verticalSwipeDistance = Math.abs(touchEndY - touchStartY);
-
-  if (horizontalSwipeDistance > verticalSwipeDistance && horizontalSwipeDistance > 50) {
-    handleSwipeGesture();
-  }
-});
-
-// Function to handle swipe gestures
-const handleSwipeGesture = () => {
-  const swipeDistance = touchEndX - touchStartX;
-
-  if (swipeDistance > 50) {
-    // Swipe Right: Close drawer
-    if (drawer.classList.contains("open")) {
-      drawer.classList.remove("open");
-    }
-  } else if (swipeDistance < -50) {
-    // Swipe Left: Open drawer
-    if (!drawer.classList.contains("open")) {
-      drawer.classList.add("open");
-      focusIndex = -1; // Reset focus
-    }
-  }
+// Function to search movies based on the movie name
+const searchMovies = () => {
+  const query = document.getElementById("search-bar").value.toLowerCase();
+  const filteredMovies = allMovies.filter(movie =>
+    movie.name.toLowerCase().includes(query)
+  );
+  displayMovies(filteredMovies);
 };
 
-// Fetch and display movies for a selected category
+// Function to fetch and display movies for a selected category
 const loadContent = async (category) => {
   try {
     const apiUrl = apiUrls[category];
@@ -76,6 +29,12 @@ const loadContent = async (category) => {
     const movies = await response.json();
     sectionTitle.textContent =
       category.charAt(0).toUpperCase() + category.slice(1) + " Movies";
+    
+    // Store the fetched movies for future filtering
+    allMovies = movies;
+    
+    // Reset search bar when switching categories
+    document.getElementById("search-bar").value = "";
     displayMovies(movies);
     drawer.classList.remove("open"); // Close the drawer automatically
   } catch (error) {
@@ -83,7 +42,7 @@ const loadContent = async (category) => {
   }
 };
 
-// Render movie cards in a grid layout
+// Render movie cards in a grid layout based on filtered movies
 const displayMovies = (movies) => {
   movieList.innerHTML = ""; // Clear previous content
   focusIndex = 0; // Reset focus index
@@ -104,7 +63,7 @@ const displayMovies = (movies) => {
   focusMovie(focusIndex); // Set initial focus
 };
 
-// Navigate through movie cards using arrow keys
+// Function to navigate through movie cards using arrow keys
 const navigateMovies = (key) => {
   const movieCards = document.querySelectorAll(".movie-card");
   if (movieCards.length === 0) return; // No movies to navigate
@@ -131,7 +90,7 @@ const navigateMovies = (key) => {
   focusMovie(focusIndex);
 };
 
-// Focus the movie card at the specified index
+// Function to focus the movie card at the specified index
 const focusMovie = (index) => {
   const movieCards = document.querySelectorAll(".movie-card");
   if (movieCards.length > 0) {
@@ -142,7 +101,7 @@ const focusMovie = (index) => {
   }
 };
 
-// Open the link of the focused movie card
+// Function to open the link of the focused movie card
 const openMovieLink = () => {
   const movieCards = document.querySelectorAll(".movie-card");
   if (movieCards.length > 0 && focusIndex >= 0 && focusIndex < movieCards.length) {
@@ -156,3 +115,126 @@ const openMovieLink = () => {
 
 // Load Tamil movies by default on page load
 loadContent("tamil");
+
+// General Styles
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: black;
+  color: white;
+  overflow: hidden; /* Prevent horizontal scrolling */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Drawer */
+.drawer {
+  width: 250px;
+  background-color: #222;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 60px;
+  border-right: 1px solid #444;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.drawer.open {
+  left: 0;
+}
+
+.drawer a {
+  color: white;
+  text-decoration: none;
+  padding: 15px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.drawer a:hover {
+  background-color: #444;
+}
+
+/* Search Bar */
+#search-bar {
+  width: 90%;
+  padding: 10px;
+  margin: 15px 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Main Content */
+.main {
+  margin-left: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#section-title {
+  padding: 20px;
+  background-color: #111;
+  margin: 0;
+  text-align: center;
+}
+
+/* Movie List Grid */
+.movie-list {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: calc(100vh - 60px); /* Allow scrolling within the remaining space */
+}
+
+@media (min-width: 600px) {
+  .movie-list {
+    grid-template-columns: repeat(4, 1fr); /* 4 images per row for larger screens */
+  }
+}
+
+@media (max-width: 599px) {
+  .movie-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 images per row for smaller screens */
+  }
+}
+
+.movie-card {
+  background-color: #333;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.movie-card:focus {
+  border: 2px solid #fff;
+}
+
+.movie-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.movie-card p {
+  margin: 10px 0 0;
+  color: white;
+  font-size: 14px;
+  word-wrap: break-word;
+    }
