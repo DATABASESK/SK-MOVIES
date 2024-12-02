@@ -11,7 +11,9 @@ const movieList = document.getElementById("movie-list");
 const sectionTitle = document.getElementById("section-title");
 let focusIndex = -1; // Index for focus (-1 when no card is focused)
 let touchStartX = 0; // Starting X position of the touch
+let touchStartY = 0; // Starting Y position of the touch
 let touchEndX = 0;   // Ending X position of the touch
+let touchEndY = 0;   // Ending Y position of the touch
 
 // Toggle drawer visibility with Arrow keys
 document.addEventListener("keydown", (event) => {
@@ -21,23 +23,31 @@ document.addEventListener("keydown", (event) => {
   } else if (event.key === "ArrowRight" && drawer.classList.contains("open")) {
     drawer.classList.remove("open");
   } else if (drawer.classList.contains("open")) {
-    // Drawer navigation (skip movie navigation when drawer is open)
-    return;
+    return; // Skip movie navigation when drawer is open
   } else if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-    navigateMovies(event.key); // Navigate movie cards
+    navigateMovies(event.key);
   } else if (event.key === "Enter" && focusIndex >= 0) {
-    openMovieLink(); // Open the focused movie link
+    openMovieLink();
   }
 });
 
-// Add touch listeners for swipe gestures
+// Touch listeners for swipe gestures
 document.addEventListener("touchstart", (event) => {
   touchStartX = event.changedTouches[0].screenX;
+  touchStartY = event.changedTouches[0].screenY;
 });
 
 document.addEventListener("touchend", (event) => {
   touchEndX = event.changedTouches[0].screenX;
-  handleSwipeGesture();
+  touchEndY = event.changedTouches[0].screenY;
+
+  // Only handle swipe gestures if horizontal movement is significant
+  const horizontalSwipeDistance = Math.abs(touchEndX - touchStartX);
+  const verticalSwipeDistance = Math.abs(touchEndY - touchStartY);
+
+  if (horizontalSwipeDistance > verticalSwipeDistance && horizontalSwipeDistance > 50) {
+    handleSwipeGesture();
+  }
 });
 
 // Function to handle swipe gestures
