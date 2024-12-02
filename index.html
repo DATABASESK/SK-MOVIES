@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Drawer -->
+  <div class="drawer" id="drawer">
+    <a href="#" onclick="loadContent('tamil')">Tamil Movies</a>
+    <a href="#" onclick="loadContent('hollywood')">Hollywood</a>
+    <a href="#" onclick="loadContent('multi')">Multi Language</a>
+    <a href="#" onclick="loadContent('ott')">OTT</a>
+    <a href="#" onclick="loadContent('netflix')">Netflix</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="main-content">
+    <h1 id="section-title">Tamil Movies</h1>
+    <div class="movie-list" id="movie-list"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
