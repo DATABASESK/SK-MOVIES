@@ -9,9 +9,12 @@ const apiUrls = {
 const drawer = document.getElementById("drawer");
 const movieList = document.getElementById("movie-list");
 const sectionTitle = document.getElementById("section-title");
+const modal = document.getElementById("modal");
+const moviePoster = document.getElementById("movie-poster");
+const playButton = document.getElementById("play-button");
+const movieVideo = document.getElementById("movie-video");
 let focusIndex = -1;
-let touchStartX = 0;
-let touchEndX = 0;
+let currentMovieLink = "";
 
 // Toggle drawer visibility with Arrow keys
 document.addEventListener("keydown", (event) => {
@@ -28,27 +31,6 @@ document.addEventListener("keydown", (event) => {
     openMovieLink();
   }
 });
-
-// Touch listeners for swipe gestures
-document.addEventListener("touchstart", (event) => {
-  touchStartX = event.changedTouches[0].screenX;
-});
-
-document.addEventListener("touchend", (event) => {
-  touchEndX = event.changedTouches[0].screenX;
-  handleSwipeGesture();
-});
-
-// Handle swipe gestures
-const handleSwipeGesture = () => {
-  const swipeDistance = touchEndX - touchStartX;
-  if (swipeDistance > 50 && drawer.classList.contains("open")) {
-    drawer.classList.remove("open");
-  } else if (swipeDistance < -50 && !drawer.classList.contains("open")) {
-    drawer.classList.add("open");
-    focusIndex = -1;
-  }
-};
 
 // Fetch and display movies
 const loadContent = async (category) => {
@@ -73,12 +55,13 @@ const displayMovies = (movies) => {
     movieCard.classList.add("movie-card");
     movieCard.tabIndex = 0;
     movieCard.setAttribute("data-link", movie.link);
+    movieCard.setAttribute("data-poster", movie.uri); // Store movie poster URI
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
     `;
     movieCard.onclick = () => {
-      window.open(movie.link, "_blank");
+      openMoviePoster(movie);
     };
     movieList.appendChild(movieCard);
   });
@@ -118,15 +101,28 @@ const focusMovie = (index) => {
   }
 };
 
-// Open movie link
-const openMovieLink = () => {
-  const movieCards = document.querySelectorAll(".movie-card");
-  if (focusIndex >= 0 && focusIndex < movieCards.length) {
-    const selectedCard = movieCards[focusIndex];
-    const link = selectedCard.getAttribute("data-link");
-    if (link) {
-      window.open(link, "_blank");
-    }
+// Open movie poster with play button
+const openMoviePoster = (movie) => {
+  moviePoster.src = movie.uri;
+  currentMovieLink = movie.link;
+  modal.style.display = "flex";
+};
+
+// Play the movie
+playButton.onclick = () => {
+  movieVideo.src = currentMovieLink;
+  moviePoster.style.display = "none";
+  playButton.style.display = "none";
+  movieVideo.style.display = "block";
+};
+
+// Close the modal when clicking outside the content
+modal.onclick = (event) => {
+  if (event.target === modal) {
+    modal.style.display = "none";
+    movieVideo.style.display = "none";
+    moviePoster.style.display = "block";
+    playButton.style.display = "block";
   }
 };
 
