@@ -9,21 +9,19 @@ const apiUrls = {
 const drawer = document.getElementById("drawer");
 const movieList = document.getElementById("movie-list");
 const sectionTitle = document.getElementById("section-title");
-let focusIndex = -1; // Index for focus (-1 when no card is focused)
-let touchStartX = 0; // Starting X position of the touch
-let touchStartY = 0; // Starting Y position of the touch
-let touchEndX = 0;   // Ending X position of the touch
-let touchEndY = 0;   // Ending Y position of the touch
+let focusIndex = -1;
+let touchStartX = 0;
+let touchEndX = 0;
 
 // Toggle drawer visibility with Arrow keys
 document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") {
     drawer.classList.add("open");
-    focusIndex = -1; // Reset movie focus when opening the drawer
+    focusIndex = -1;
   } else if (event.key === "ArrowRight" && drawer.classList.contains("open")) {
     drawer.classList.remove("open");
   } else if (drawer.classList.contains("open")) {
-    return; // Skip movie navigation when drawer is open
+    return;
   } else if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
     navigateMovies(event.key);
   } else if (event.key === "Enter" && focusIndex >= 0) {
@@ -34,85 +32,64 @@ document.addEventListener("keydown", (event) => {
 // Touch listeners for swipe gestures
 document.addEventListener("touchstart", (event) => {
   touchStartX = event.changedTouches[0].screenX;
-  touchStartY = event.changedTouches[0].screenY;
 });
 
 document.addEventListener("touchend", (event) => {
   touchEndX = event.changedTouches[0].screenX;
-  touchEndY = event.changedTouches[0].screenY;
-
-  // Only handle swipe gestures if horizontal movement is significant
-  const horizontalSwipeDistance = Math.abs(touchEndX - touchStartX);
-  const verticalSwipeDistance = Math.abs(touchEndY - touchStartY);
-
-  if (horizontalSwipeDistance > verticalSwipeDistance && horizontalSwipeDistance > 50) {
-    handleSwipeGesture();
-  }
+  handleSwipeGesture();
 });
 
-// Function to handle swipe gestures
+// Handle swipe gestures
 const handleSwipeGesture = () => {
   const swipeDistance = touchEndX - touchStartX;
-
-  if (swipeDistance > 50) {
-    // Swipe Right: Close drawer
-    if (drawer.classList.contains("open")) {
-      drawer.classList.remove("open");
-    }
-  } else if (swipeDistance < -50) {
-    // Swipe Left: Open drawer
-    if (!drawer.classList.contains("open")) {
-      drawer.classList.add("open");
-      focusIndex = -1; // Reset focus
-    }
+  if (swipeDistance > 50 && drawer.classList.contains("open")) {
+    drawer.classList.remove("open");
+  } else if (swipeDistance < -50 && !drawer.classList.contains("open")) {
+    drawer.classList.add("open");
+    focusIndex = -1;
   }
 };
 
-// Fetch and display movies for a selected category
+// Fetch and display movies
 const loadContent = async (category) => {
   try {
-    const apiUrl = apiUrls[category];
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrls[category]);
     const movies = await response.json();
     sectionTitle.textContent =
       category.charAt(0).toUpperCase() + category.slice(1) + " Movies";
     displayMovies(movies);
-    drawer.classList.remove("open"); // Close the drawer automatically
+    drawer.classList.remove("open");
   } catch (error) {
     console.error("Error fetching movies:", error);
   }
 };
 
-// Render movie cards in a grid layout
+// Display movies in grid
 const displayMovies = (movies) => {
-  movieList.innerHTML = ""; // Clear previous content
-  focusIndex = 0; // Reset focus index
+  movieList.innerHTML = "";
+  focusIndex = 0;
   movies.forEach((movie, index) => {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
-    movieCard.tabIndex = 0; // Make each card focusable
-    movieCard.setAttribute("data-link", movie.link); // Store link for navigation
+    movieCard.tabIndex = 0;
+    movieCard.setAttribute("data-link", movie.link);
     movieCard.innerHTML = `
       <img src="${movie.uri}" alt="${movie.name}">
       <p>${movie.name}</p>
     `;
     movieCard.onclick = () => {
-      window.open(movie.link, "_blank"); // Open movie link in a new tab
+      window.open(movie.link, "_blank");
     };
     movieList.appendChild(movieCard);
   });
-  focusMovie(focusIndex); // Set initial focus
+  focusMovie(focusIndex);
 };
 
-// Navigate through movie cards using arrow keys
+// Navigate movie cards
 const navigateMovies = (key) => {
   const movieCards = document.querySelectorAll(".movie-card");
-  if (movieCards.length === 0) return; // No movies to navigate
-
-  const numColumns = window.innerWidth >= 600 ? 4 : 2; // Determine grid columns
-  const numRows = Math.ceil(movieCards.length / numColumns);
-
-  // Calculate the next focus index based on the arrow key
+  if (movieCards.length === 0) return;
+  const numColumns = window.innerWidth >= 600 ? 4 : 2;
   switch (key) {
     case "ArrowRight":
       focusIndex = (focusIndex + 1) % movieCards.length;
@@ -127,32 +104,31 @@ const navigateMovies = (key) => {
       focusIndex = Math.max(focusIndex - numColumns, 0);
       break;
   }
-
   focusMovie(focusIndex);
 };
 
-// Focus the movie card at the specified index
+// Focus movie card
 const focusMovie = (index) => {
   const movieCards = document.querySelectorAll(".movie-card");
   if (movieCards.length > 0) {
-    movieCards.forEach((card) => card.blur()); // Remove focus from all cards
+    movieCards.forEach((card) => card.blur());
     if (index >= 0 && index < movieCards.length) {
-      movieCards[index].focus(); // Set focus on the selected card
+      movieCards[index].focus();
     }
   }
 };
 
-// Open the link of the focused movie card
+// Open movie link
 const openMovieLink = () => {
   const movieCards = document.querySelectorAll(".movie-card");
-  if (movieCards.length > 0 && focusIndex >= 0 && focusIndex < movieCards.length) {
+  if (focusIndex >= 0 && focusIndex < movieCards.length) {
     const selectedCard = movieCards[focusIndex];
     const link = selectedCard.getAttribute("data-link");
     if (link) {
-      window.open(link, "_blank"); // Open the movie link in a new tab
+      window.open(link, "_blank");
     }
   }
 };
 
-// Load Tamil movies by default on page load
+// Load Tamil movies by default
 loadContent("tamil");
